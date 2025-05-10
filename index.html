@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dobókocka</title>
+    <style>
+      :root {
+        --size: 50px;
+        --x-deg: 0deg;
+        --y-deg: 0deg;
+      }
+      .cube {
+        width: var(--size);
+        aspect-ratio: 1;
+        margin: 2rem;
+        transform-style: preserve-3d;
+
+        transform: rotateX(180deg) rotateY(0deg);
+      }
+      .cube > div {
+        --dot-size: calc(var(--size) / 4);
+        --spacing: calc(var(--size) / 10);
+        --bg-color: rgb(223, 205, 205);
+        --dot-color: black;
+        --side-size: calc(var(--size) / 2);
+        position: absolute;
+        width: inherit;
+        height: 100%;
+        display: grid;
+
+        border: 1px solid var(--dot-color);
+        box-sizing: border-box;
+        /* pontok */
+        > div {
+          width: var(--dot-size);
+          aspect-ratio: 1;
+          background-color: black;
+          border-radius: 50%;
+        }
+      }
+      .first {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform: translateZ(var(--side-size));
+        /* pontok elrendezése*/
+        place-content: center;
+      }
+
+      .second {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform: translateZ(calc(var(--side-size) * -1)) rotateY(180deg);
+
+        /* pontok elrendezése */
+        place-content: center;
+        gap: var(--spacing);
+      }
+      .third {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform: translateX(var(--side-size)) rotateY(90deg);
+
+        /*pontok elrendezése*/
+        place-content: center;
+        gap: var(--spacing);
+      }
+      .fourth {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform: translateX(calc(var(--side-size) * -1)) rotateY(-90deg);
+
+        /* pontok elrendezése */
+
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        justify-items: center;
+      }
+      .fifth {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform: translateY(calc(var(--side-size) * -1)) rotateX(90deg);
+
+        /* pontok elrendezése */
+
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        align-items: center;
+        justify-items: center;
+
+        > div:nth-child(1) {
+          grid-column: 1;
+          grid-row: 1;
+        }
+        > div:nth-child(2) {
+          grid-column: 3;
+          grid-row: 1;
+        }
+        > div:nth-child(3) {
+          grid-column: 2;
+          grid-row: 2;
+        }
+        > div:nth-child(4) {
+          grid-column: 1;
+          grid-row: 3;
+        }
+        > div:nth-child(5) {
+          grid-column: 3;
+          grid-row: 3;
+        }
+      }
+      .sixth {
+        width: inherit;
+        height: inherit;
+        background-color: var(--bg-color);
+        transform-origin: center center;
+        transform: translateY(var(--side-size)) rotateX(-90deg);
+
+        /* pontok elrendezése */
+
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        justify-items: center;
+      }
+
+      @keyframes rotateCube {
+        0% {
+          transform: rotateX(0deg) rotateY(0deg);
+        }
+        100% {
+          transform: rotateX(360deg) rotateY(360deg);
+        }
+      }
+
+      @keyframes rotateTo {
+        to {
+          transform: rotateX(var(--x-deg)) rotateY(var(--y-deg));
+        }
+      }
+
+      button {
+        background-color: rgb(234, 65, 65);
+        border: 0;
+        padding: 1rem;
+        border-radius: 10%;
+        cursor: pointer;
+        color: white;
+        transition: 0.3s;
+        &:active {
+          scale: 0.9;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button id="rollButton">Dobás</button>
+    <div id="result"></div>
+    <div class="cube">
+      <div class="first">
+        <div></div>
+      </div>
+      <div class="second">
+        <div></div>
+        <div></div>
+      </div>
+      <div class="third">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="fourth">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="fifth">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="sixth">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <script>
+      cubeSides = {
+        1: {
+          x: 0,
+          y: 0,
+        },
+        2: {
+          x: 180,
+          y: 0,
+        },
+        3: {
+          x: 0,
+          y: 270,
+        },
+        4: {
+          x: 0,
+          y: 90,
+        },
+        5: {
+          x: 270,
+          y: 0,
+        },
+        6: {
+          x: 90,
+          y: 0,
+        },
+      };
+
+      document
+        .getElementById("rollButton")
+        .addEventListener("click", function () {
+          const result = Math.floor(Math.random() * 6) + 1;
+          const cubeEl = document.querySelector(".cube");
+          const time = "2";
+          cubeEl.style.animation = `rotateCube ${time}s ease infinite`;
+
+          setTimeout(() => {
+            cubeEl.style.setProperty("--x-deg", cubeSides[result].x + "deg");
+            cubeEl.style.setProperty("--y-deg", cubeSides[result].y + "deg");
+            cubeEl.style.animation = `rotateTo ${time}s ease forwards`;
+          }, Number(time) * 1000);
+        });
+    </script>
+  </body>
+</html>
